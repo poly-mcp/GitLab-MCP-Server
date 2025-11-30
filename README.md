@@ -240,6 +240,7 @@ The server tracks all operations and provides usage statistics.
 Gitlab-MCP-Server/
 ├── gitlab_mcp_server.py    # Main server
 ├── cursor_tools.py         # Wrapper for Cursor
+├── gitlab_chat.py          # Client for PolyMCP
 ├── gitlab_assistant.py     # Client for ChatGPT
 ├── .env.example            # Configuration template
 ├── requirements.txt        # Dependencies
