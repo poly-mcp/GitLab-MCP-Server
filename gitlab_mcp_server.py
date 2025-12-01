@@ -140,7 +140,9 @@ class GitLabConfig:
         """Parse comma-separated allowed projects."""
         projects_str = os.getenv("ALLOWED_PROJECTS", "")
         if not projects_str:
-            return set()
+            return set()  # Empty = no projects allowed
+        if projects_str.strip() == "*":
+            return {"*"}  # Wildcard
         return set(p.strip() for p in projects_str.split(',') if p.strip())
     
     def _setup_logging(self):
@@ -165,8 +167,16 @@ class GitLabConfig:
         }
     
     def is_project_allowed(self, project_id: str) -> bool:
-        """Check if project is allowed based on configuration."""
-        if not self.allowed_projects:  # Empty means all allowed
+        """
+        Check if project is allowed based on configuration.
+        - Empty ALLOWED_PROJECTS = deny all (secure by default)
+        - ALLOWED_PROJECTS=* = allow all
+        - ALLOWED_PROJECTS=proj1,proj2 = allow only listed
+        """
+        if not self.allowed_projects:  # Empty = deny all
+            logger.warning("No projects allowed (ALLOWED_PROJECTS is empty)")
+            return False
+        if "*" in self.allowed_projects:  # Wildcard = allow all
             return True
         return project_id in self.allowed_projects
 
