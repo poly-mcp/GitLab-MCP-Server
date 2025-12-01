@@ -1,5 +1,9 @@
 # GitLab MCP Server
 
+![Python 3.8+](https://img.shields.io/badge/python-3.8+-blue.svg)
+![License MIT](https://img.shields.io/badge/license-MIT-green.svg)
+![MCP Compatible](https://img.shields.io/badge/MCP-compatible-purple.svg)
+
 An MCP (Model Context Protocol) server for integrating GitLab with AI assistants like Cursor, ChatGPT, and any polymcp-compatible client. Manage merge requests, analyze CI/CD pipelines, create ADR documents, and more.
 
 ## What it does
@@ -207,21 +211,62 @@ ngrok http 8000
 
 3. Or use Code Interpreter by uploading `gitlab_assistant.py`
 
+## Safety Features
+
+The server includes built-in protections:
+
+| Feature | Default | What it does |
+|---------|---------|--------------|
+| Safe Mode | `ON` | Blocks write operations until you're ready |
+| Dry Run | `OFF` | Test operations without executing them |
+| Project Allowlist | `*` (all allowed) | Use `*` for all, empty to block all, or list specific projects |
+| Rate Limiting | 60/min | Prevents API abuse |
+
+> 💡 Start with `SAFE_MODE=true` to explore safely, then disable when needed.
+
 ## Available Tools
 
-| Tool | Description | Risk Level |
-|------|-------------|------------|
-| list_merge_requests | List MRs with filters | Low |
-| get_merge_request_details | Get MR details and discussions | Low |
-| approve_merge_request | Approve an MR | Medium |
-| merge_merge_request | Execute the merge | High |
-| list_pipeline_jobs | List CI/CD jobs | Low |
-| analyze_failed_jobs | Analyze errors and suggest fixes | Low |
-| retry_failed_job | Retry a failed job | Medium |
-| get_job_log | View job log | Low |
-| create_adr_document | Create ADR document | Low |
-| commit_adr_to_gitlab | Commit ADR to repo | Medium |
-| trigger_pipeline | Start new pipeline | Medium |
+### Merge Request Management
+
+| Tool | Description |
+|------|-------------|
+| `list_merge_requests` | List merge requests with filters (state, author, assignee) |
+| `get_merge_request_details` | Get MR details including changes and discussions |
+| `create_merge_request` | Create a new merge request |
+| `approve_merge_request` | Approve a merge request |
+| `merge_merge_request` | Merge a merge request into target branch |
+| `rebase_merge_request` | Rebase a merge request onto target branch |
+
+### Code Search
+
+| Tool | Description |
+|------|-------------|
+| `search_code` | Search for code across project files |
+
+### Pipeline & CI/CD
+
+| Tool | Description |
+|------|-------------|
+| `list_pipeline_jobs` | List all jobs in a pipeline with status |
+| `get_job_log` | Get the log output of a specific job |
+| `analyze_failed_jobs` | Analyze failures and suggest fixes |
+| `trigger_pipeline` | Trigger a new pipeline run |
+| `retry_pipeline` | Retry all failed jobs in a pipeline |
+| `cancel_pipeline` | Cancel a running pipeline |
+| `retry_failed_job` | Retry a specific failed job |
+
+### ADR (Architecture Decision Records)
+
+| Tool | Description |
+|------|-------------|
+| `create_adr_document` | Create an ADR document in Markdown format |
+| `commit_adr_to_gitlab` | Commit ADR to repository with optional MR |
+
+### Cloud Deployment
+
+| Tool | Description |
+|------|-------------|
+| `deploy_to_cloud` | Deploy to AWS, Azure, or GCP via pipeline |
 
 ## Security
 
@@ -246,6 +291,15 @@ Gitlab-MCP-Server/
 ├── requirements.txt        # Dependencies
 └── README.md
 ```
+
+## Troubleshooting
+
+| Error | Solution |
+|-------|----------|
+| `GITLAB_TOKEN is required` | Create `.env` file with your token |
+| `Operation blocked by safe mode` | Set `SAFE_MODE=false` in `.env` |
+| `Access denied to project` | Check token permissions or `ALLOWED_PROJECTS` |
+| `Request timed out` | Increase `MAX_RETRIES` in `.env` |
 
 ## Contributing
 
